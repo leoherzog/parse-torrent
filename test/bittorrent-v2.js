@@ -180,3 +180,15 @@ test('Test validation requires either v1 or v2 hash', async t => {
 
   t.end()
 })
+
+test('Parse hybrid and v2 metadata fetched by magnet, which has no piece layers', async t => {
+  for (const name of ['bittorrent-v2-hybrid-test', 'bittorrent-v2-test']) {
+    const full = fs.readFileSync(`./test/torrents/${name}.torrent`)
+    const fromFile = await parseTorrent(full)
+    const fromMagnet = await parseTorrent(new Uint8Array(bencode.encode({ info: bencode.decode(full).info })))
+    t.equal(fromMagnet.infoHash, fromFile.infoHash, `${name} keeps its v1 info hash`)
+    t.equal(fromMagnet.infoHashV2, fromFile.infoHashV2, `${name} keeps its v2 info hash`)
+    t.equal(fromMagnet.version, fromFile.version, `${name} keeps its version`)
+  }
+  t.end()
+})

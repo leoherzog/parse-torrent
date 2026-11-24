@@ -147,7 +147,6 @@ async function decodeTorrentFile (torrent) {
   // BitTorrent v2 validation (when v2 structures present)
   if (hasV2Structure) {
     ensure(torrent.info['meta version'] === 2, 'info[\'meta version\']')
-    ensure(torrent['piece layers'], 'piece layers')
   }
 
   // BitTorrent v1 validation (when v1 structures present)
