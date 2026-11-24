@@ -179,8 +179,6 @@ async function decodeTorrentFile (torrent) {
   if (hasV2Structure) {
     result.infoHashV2Buffer = await hash(result.infoBuffer, undefined, 'sha-256')
     result.infoHashV2 = arr2hex(result.infoHashV2Buffer)
-    // carry piece layers through so toTorrentFile can produce a valid v2 file
-    result.pieceLayers = torrent['piece layers']
   }
 
   // Set version for easy downstream detection
@@ -296,10 +294,6 @@ function encodeTorrentFile (parsed) {
 
   if (parsed.comment) {
     torrent.comment = parsed.comment
-  }
-
-  if (parsed.pieceLayers) {
-    torrent['piece layers'] = parsed.pieceLayers
   }
 
   return bencode.encode(torrent)

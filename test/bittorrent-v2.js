@@ -192,3 +192,11 @@ test('Parse hybrid and v2 metadata fetched by magnet, which has no piece layers'
   }
   t.end()
 })
+
+test('toTorrentFile leaves piece layers out, as for v1 torrents', async t => {
+  const parsed = await parseTorrent(fs.readFileSync('./test/torrents/bittorrent-v2-hybrid-test.torrent'))
+  t.equal(parsed.pieceLayers, undefined, 'parsed torrent has no pieceLayers')
+  const encoded = bencode.decode(toTorrentFile(parsed))
+  t.equal(encoded['piece layers'], undefined, 'encoded torrent has no piece layers')
+  t.end()
+})
