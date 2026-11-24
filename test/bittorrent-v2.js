@@ -200,3 +200,20 @@ test('toTorrentFile leaves piece layers out, as for v1 torrents', async t => {
   t.equal(encoded['piece layers'], undefined, 'encoded torrent has no piece layers')
   t.end()
 })
+
+test('Parse a v1 torrent with a stray file tree as v1', async t => {
+  const parsed = await parseTorrent(new Uint8Array(bencode.encode({
+    info: {
+      name: 'x',
+      'piece length': 16384,
+      length: 5,
+      pieces: new Uint8Array(20),
+      'file tree': { x: { '': { length: 5 } } }
+    }
+  })))
+  t.equal(parsed.version, 'v1')
+  t.ok(parsed.infoHash, 'has a v1 info hash')
+  t.equal(parsed.infoHashV2, undefined, 'has no v2 info hash')
+  t.deepEqual(parsed.files.map(f => [f.path, f.length]), [['x', 5]])
+  t.end()
+})

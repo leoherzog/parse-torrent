@@ -140,14 +140,10 @@ async function decodeTorrentFile (torrent) {
   ensure(torrent.info['piece length'], 'info[\'piece length\']')
 
   const hasV1Structure = !!(torrent.info.pieces || torrent.info.files || typeof torrent.info.length === 'number')
-  const hasV2Structure = !!torrent.info['file tree']
+  // a file tree without meta version 2 is ignored, so such torrents still parse as v1
+  const hasV2Structure = !!torrent.info['file tree'] && torrent.info['meta version'] === 2
 
-  ensure(hasV1Structure || hasV2Structure, 'info.pieces or info[\'file tree\']')
-
-  // BitTorrent v2 validation (when v2 structures present)
-  if (hasV2Structure) {
-    ensure(torrent.info['meta version'] === 2, 'info[\'meta version\']')
-  }
+  ensure(hasV1Structure || hasV2Structure, 'info.pieces or info[\'file tree\'] with info[\'meta version\'] 2')
 
   // BitTorrent v1 validation (when v1 structures present)
   if (hasV1Structure) {
